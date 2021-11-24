@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
+}
+
+group 'io.github.zhangt2333'
+version '1.0.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.javassist:javassist:3.28.0-GA'
+    testImplementation 'junit:junit:4.13.2'
+}
+
+shadowJar {
+    manifest {
+        attributes 'Premain-Class': 'io.github.zhangt2333.jmtrace.MemoryTraceAgent'
+    }
+    archiveBaseName.set('jmtrace')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+
+test {
+    dependsOn shadowJar
+    jvmArgs([
+        "-javaagent:" + tasks.shadowJar.archiveFile.get().asFile.path + "=" + "debug=true"
+    ])
+}
