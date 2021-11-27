@@ -8,8 +8,10 @@ import java.lang.instrument.Instrumentation;
  */
 public class MemoryTraceAgent {
     public static void premain(String arg, Instrumentation instrumentation) {
-        System.out.println("Javaagent premain running, arg:" + arg);
         boolean debug = "debug=true".equals(arg);
+        if (debug) {
+            System.out.println("[debug] Javaagent premain running.");
+        }
         instrumentation.addTransformer(new BytecodeTransformer(debug));
     }
 }
