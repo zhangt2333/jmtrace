@@ -110,52 +110,28 @@ public class BytecodeTransformer implements ClassFileTransformer {
                             handlePutfield(it, constPool, address);
                             break;
                         case Opcode.BASTORE:
-                            handle32xastore(it, constPool, address, "B");
-                            break;
                         case Opcode.CASTORE:
-                            handle32xastore(it, constPool, address, "C");
-                            break;
                         case Opcode.SASTORE:
-                            handle32xastore(it, constPool, address, "S");
-                            break;
                         case Opcode.IASTORE:
-                            handle32xastore(it, constPool, address, "I");
-                            break;
                         case Opcode.FASTORE:
-                            handle32xastore(it, constPool, address, "F");
-                            break;
                         case Opcode.AASTORE:
-                            handle32xastore(it, constPool, address, "Ljava/lang/Object;");
+                            handle32xastore(it, constPool, address, opcode);
                             break;
                         case Opcode.DASTORE:
-                            handle64xastore(it, constPool, address, 'D');
-                            break;
                         case Opcode.LASTORE:
-                            handle64xastore(it, constPool, address, 'J');
+                            handle64xastore(it, constPool, address, opcode);
                             break;
                         case Opcode.BALOAD:
-                            handle32xaload(it, constPool, address, "B");
-                            break;
                         case Opcode.CALOAD:
-                            handle32xaload(it, constPool, address, "C");
-                            break;
                         case Opcode.SALOAD:
-                            handle32xaload(it, constPool, address, "S");
-                            break;
                         case Opcode.IALOAD:
-                            handle32xaload(it, constPool, address, "I");
-                            break;
                         case Opcode.FALOAD:
-                            handle32xaload(it, constPool, address, "F");
-                            break;
                         case Opcode.AALOAD:
-                            handle32xaload(it, constPool, address, "Ljava/lang/Object;");
+                            handle32xaload(it, constPool, address, opcode);
                             break;
                         case Opcode.LALOAD:
-                            handle64xaload(it, constPool, address, "J");
-                            break;
                         case Opcode.DALOAD:
-                            handle64xaload(it, constPool, address, "D");
+                            handle64xaload(it, constPool, address, opcode);
                             break;
                     }
                 }
@@ -205,7 +181,18 @@ public class BytecodeTransformer implements ClassFileTransformer {
 
     /* for *astore/*aload */
 
-    private Bytecode getBytecodeFor32Array(CodeIterator it, ConstPool constPool, int address) {
+    private String opcodeToDescriptor(int opcode) {
+        char x = Character.toUpperCase(Mnemonic.OPCODE[opcode].charAt(0));
+        if (x == 'L') {
+            return "J";
+        }
+        if (x == 'A') {
+            return "Ljava/lang/Object;";
+        }
+        return String.valueOf(x);
+    }
+
+    private void handle32xastore(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
         Bytecode bytecode = new Bytecode(constPool);
         // ..., arr, index, value(4byte)
         bytecode.add(Opcode.DUP2_X1);
@@ -220,10 +207,8 @@ public class BytecodeTransformer implements ClassFileTransformer {
         // ..., index, arr, value(4byte), arr, index, value(4byte), arr
         bytecode.add(Opcode.POP);
         // ..., index, arr, value(4byte), arr, index, value(4byte)
-        return bytecode;
-    }
-
-    private void bytecodeEndFor32xastore(Bytecode bytecode) {
+        bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
+                "traceArrayWrite", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
         // ..., index, arr, value(4byte)
         bytecode.add(Opcode.DUP2_X1);
         // ..., arr, value(4byte), index, arr, value(4byte)
@@ -231,18 +216,10 @@ public class BytecodeTransformer implements ClassFileTransformer {
         // ..., arr, value(4byte), index
         bytecode.add(Opcode.SWAP);
         // ..., arr, index, value(4byte)
-    }
-
-    private void handle32xastore(CodeIterator it, ConstPool constPool, int address, String x) throws BadBytecode {
-        Bytecode bytecode = getBytecodeFor32Array(it, constPool, address);
-        bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-                "traceArrayWrite", String.format("(Ljava/lang/Object;I%s)V", x));
-        // ..., index, arr, value(4byte)
-        bytecodeEndFor32xastore(bytecode);
         it.insert(address, bytecode.get());
     }
 
-    private void handle64xastore(CodeIterator it, ConstPool constPool, int address, char x) throws BadBytecode {
+    private void handle64xastore(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
         Bytecode bytecode = new Bytecode(constPool);
         // ..., arr, index, value(8byte)
         bytecode.add(Opcode.DUP2_X1);
@@ -254,7 +231,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         bytecode.add(Opcode.DUP_X2);
         // ..., arr, value(8byte), index, value(8byte), index
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-                "traceArrayWrite", String.format("(%CI)V", x));
+                "traceArrayWrite", String.format("(%sI)V", opcodeToDescriptor(opcode)));
         // ..., arr, value(8byte), index
         bytecode.add(Opcode.DUP_X2);
         // ..., arr, index, value(8byte), index
@@ -263,7 +240,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         it.insert(address, bytecode.get());
     }
 
-    private void handle32xaload(CodeIterator it, ConstPool constPool, int address, String x) throws BadBytecode {
+    private void handle32xaload(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
         Bytecode bytecode = new Bytecode(constPool);
         // ..., arr, index
         bytecode.add(Opcode.DUP2);
@@ -274,11 +251,11 @@ public class BytecodeTransformer implements ClassFileTransformer {
         bytecode.add(Opcode.DUP_X2);
         // ..., value(4Byte), arr, index, value(4Byte)
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-                "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", x));
+                "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
         it.insert(bytecode.get());
     }
 
-    private void handle64xaload(CodeIterator it, ConstPool constPool, int address, String x) throws BadBytecode {
+    private void handle64xaload(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
         Bytecode bytecode = new Bytecode(constPool);
         // ..., arr, index
         bytecode.add(Opcode.DUP2);
@@ -289,7 +266,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         bytecode.add(Opcode.DUP2_X2);
         // ..., value(8Byte), arr, index, value(8Byte)
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-                "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", x));
+                "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
         it.insert(bytecode.get());
     }
 }
