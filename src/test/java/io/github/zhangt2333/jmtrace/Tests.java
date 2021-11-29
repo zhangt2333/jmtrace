@@ -220,28 +220,84 @@ public class Tests {
         a.as[1] = new A();
     }
 
-}
+    @Test
+    public void objectArrayLoad() {
+        A a = new A();
 
-class A {
-    public String f;
+        a.bytess = new Byte[2];
+        Byte b = a.bytess[0];
+        b = a.bytess[1];
 
-    public byte[] bytes;
-    public boolean[] booleans;
-    public char[] chars;
-    public short[] shorts;
-    public int[] ints;
-    public float[] floats;
-    public double[] doubles;
-    public long[] longs;
+        a.booleanss = new Boolean[2];
+        Boolean bool = a.booleanss[0];
+        bool = a.booleanss[1];
 
-    public Byte[] bytess;
-    public Boolean[] booleanss;
-    public Character[] charss;
-    public Short[] shortss;
-    public Integer[] intss;
-    public Float[] floatss;
-    public Double[] doubless;
-    public Long[] longss;
-    public Object[] objects;
-    public A[] as;
+        a.charss = new Character[2];
+        Character c = a.charss[0];
+        c = a.charss[1];
+
+        a.shortss = new Short[2];
+        Short s = a.shortss[0];
+        s = a.shortss[1];
+
+        a.intss = new Integer[2];
+        Integer i = a.intss[0];
+        i = a.intss[1];
+
+        a.floatss = new Float[2];
+        Float f = a.floatss[0];
+        f = a.floatss[1];
+
+        a.longss = new Long[2];
+        Long l = a.longss[0];
+        l = a.longss[1];
+
+        a.doubless = new Double[2];
+        Double d = a.doubless[0];
+        d = a.doubless[1];
+
+        a.objects = new Object[2];
+        Object o = a.objects[0];
+        o = a.objects[1];
+
+        a.as = new A[2];
+        A a1 = a.as[0];
+        a1 = a.as[1];
+    }
+
+    /**
+     * A bug triggered by @see worker.org.gradle.api.JavaVersion#getVersionForMajor
+     * <br>
+     * this reason of the bug is Javassist have not edited the operand of goto instruction when we call `CodeIterator::insert` twice
+     * <br>
+     * <pre>
+     * Instruction type does not match stack map
+     * Exception Details:
+     *   Location:
+     *     io/github/zhangt2333/jmtrace/JavaVersion.getVersionForMajor(I)Lio/github/zhangt2333/jmtrace/JavaVersion; @30: dup_x2
+     *   Reason:
+     *     Current frame's stack size doesn't match stackmap.
+     *   Current Frame:
+     *     bci: @30
+     *     flags: { }
+     *     locals: { integer }
+     *     stack: { '[Lio/github/zhangt2333/jmtrace/JavaVersion;', integer, 'io/github/zhangt2333/jmtrace/JavaVersion' }
+     *   Stackmap Frame:
+     *     bci: @30
+     *     flags: { }
+     *     locals: { integer }
+     *     stack: { 'io/github/zhangt2333/jmtrace/JavaVersion' }
+     *   Bytecode:
+     *     0x0000000: 1ab8 0010 bea1 0011 b200 1159 12a6 123b
+     *     0x0000010: b800 b0a7 000b b800 101a 0464 5c32 5bb8
+     *     0x0000020: 00b8 b0
+     *   Stackmap Table:
+     *     same_frame(@22)
+     *     same_locals_1_stack_item_frame(@30,Object[#103])
+     * </pre>
+     */
+    @Test
+    public void bug1() {
+        JavaVersion.getVersionForMajor(1);
+    }
 }

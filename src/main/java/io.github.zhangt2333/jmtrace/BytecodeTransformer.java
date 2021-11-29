@@ -90,16 +90,16 @@ public class BytecodeTransformer implements ClassFileTransformer {
                 }
                 MethodInfo methodInfo = ctBehavior.getMethodInfo();
                 CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+
                 if (debug) {
                     System.out.printf("[debug]   [%s#%s%s]\n", ctClass.getName(), methodInfo.getName(),
                             methodInfo.getDescriptor());
+                    printAllBytecode(codeAttribute);
                 }
+
                 for (CodeIterator it = codeAttribute.iterator(); it.hasNext();) {
                     int address = it.next();
                     int opcode = it.byteAt(address);
-                    if (debug) {
-                        System.out.printf("[debug] %d %s\n", address, Mnemonic.OPCODE[opcode]);
-                    }
                     switch (opcode) {
                         case Opcode.GETSTATIC:
                         case Opcode.GETFIELD:
@@ -137,11 +137,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
                 }
                 if (debug) {
                     System.out.println("[debug] -------- after manipulating --------");
-                    for (CodeIterator it = codeAttribute.iterator(); it.hasNext();) {
-                        int address = it.next();
-                        int opcode = it.byteAt(address);
-                        System.out.printf("[debug] %d %s\n", address, Mnemonic.OPCODE[opcode]);
-                    }
+                    printAllBytecode(codeAttribute);
                 }
                 codeAttribute.computeMaxStack();
             }
@@ -151,6 +147,20 @@ public class BytecodeTransformer implements ClassFileTransformer {
         }
         return null;
     }
+
+    private void printAllBytecode(CodeAttribute codeAttribute) throws BadBytecode {
+        for (CodeIterator it = codeAttribute.iterator(); it.hasNext();) {
+            int address = it.next();
+            int opcode = it.byteAt(address);
+            if (Opcode.GOTO == opcode || Opcode.IF_ICMPLT == opcode) {
+                int operand = it.s16bitAt(address + 1);
+                System.out.printf("[debug] %d %s %d\n", address, Mnemonic.OPCODE[opcode], operand);
+            } else {
+                System.out.printf("[debug] %d %s\n", address, Mnemonic.OPCODE[opcode]);
+            }
+        }
+    }
+
 
     /* for getstatic/putstatic/getfield/putfield */
 
@@ -245,14 +255,14 @@ public class BytecodeTransformer implements ClassFileTransformer {
         // ..., arr, index
         bytecode.add(Opcode.DUP2);
         // ..., arr, index, arr, index
-        it.insert(address, bytecode.get());
-        // ..., arr, index, value(4Byte)
-        bytecode = new Bytecode(constPool);
-        bytecode.add(Opcode.DUP_X2);
-        // ..., value(4Byte), arr, index, value(4Byte)
+        bytecode.add(Opcode.DUP2);
+        // ..., arr, index, arr, index, arr, index
+        bytecode.add(opcode);
+        // ..., arr, index, arr, index, value(4Byte)
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
                 "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
-        it.insert(bytecode.get());
+        // ..., arr, index
+        it.insert(address, bytecode.get());
     }
 
     private void handle64xaload(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
@@ -260,13 +270,13 @@ public class BytecodeTransformer implements ClassFileTransformer {
         // ..., arr, index
         bytecode.add(Opcode.DUP2);
         // ..., arr, index, arr, index
-        it.insert(address, bytecode.get());
-        // ..., arr, index, value(8Byte)
-        bytecode = new Bytecode(constPool);
-        bytecode.add(Opcode.DUP2_X2);
-        // ..., value(8Byte), arr, index, value(8Byte)
+        bytecode.add(Opcode.DUP2);
+        // ..., arr, index, arr, index, arr, index
+        bytecode.add(opcode);
+        // ..., arr, index, arr, index, value(8Byte)
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
                 "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
-        it.insert(bytecode.get());
+        // ..., arr, index
+        it.insert(address, bytecode.get());
     }
 }
