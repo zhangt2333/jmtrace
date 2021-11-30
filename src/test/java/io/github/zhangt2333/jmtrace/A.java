@@ -5,7 +5,15 @@ package io.github.zhangt2333.jmtrace;
  * @author zhangt2333
  */
 class A {
-    public String f;
+    public String aString;
+    public byte aByte;
+    public boolean aBoolean;
+    public char aChar;
+    public short aShort;
+    public int anInt;
+    public float aFloat;
+    public double aDouble;
+    public long aLong;
 
     public byte[] bytes;
     public boolean[] booleans;

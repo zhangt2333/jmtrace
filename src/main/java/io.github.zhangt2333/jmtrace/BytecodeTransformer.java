@@ -164,28 +164,35 @@ public class BytecodeTransformer implements ClassFileTransformer {
 
     /* for getstatic/putstatic/getfield/putfield */
 
-    private Bytecode getBytecodeForField(CodeIterator it, ConstPool constPool, int address) {
+    private String handleBytecodeForField(Bytecode bytecode, CodeIterator it, ConstPool constPool, int address) {
         int operand = it.s16bitAt(address + 1);
         String fieldName = constPool.getFieldrefName(operand);
         String fieldClassName = constPool.getFieldrefClassName(operand);
-        Bytecode bytecode = new Bytecode(constPool);
-        bytecode.addOpcode(Opcode.DUP);
+        String fieldType = constPool.getFieldrefType(operand);
+        fieldType = fieldType.length() > 1 ? "Ljava/lang/Object;" : fieldType;
+        if ("J".equals(fieldType) || "D".equals(fieldType)) {
+            bytecode.add(Opcode.DUP2);
+        } else {
+            bytecode.add(Opcode.DUP);
+        }
         bytecode.addLdc(fieldClassName);
         bytecode.addLdc(fieldName);
-        return bytecode;
+        return fieldType;
     }
 
     private void handlePutfield(CodeIterator it, ConstPool constPool, int address) throws BadBytecode {
-        Bytecode bytecode = getBytecodeForField(it, constPool, address);
+        Bytecode bytecode = new Bytecode(constPool);
+        String fieldType = handleBytecodeForField(bytecode, it, constPool, address);
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-            "traceFieldWrite", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
+            "traceFieldWrite", String.format("(%sLjava/lang/String;Ljava/lang/String;)V", fieldType));
         it.insert(address, bytecode.get());
     }
 
     private void handleGetfield(CodeIterator it, ConstPool constPool, int address) throws BadBytecode {
-        Bytecode bytecode = getBytecodeForField(it, constPool, address);
+        Bytecode bytecode = new Bytecode(constPool);
+        String fieldType = handleBytecodeForField(bytecode, it, constPool, address);
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-            "traceFieldRead", "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V");
+            "traceFieldRead", String.format("(%sLjava/lang/String;Ljava/lang/String;)V", fieldType));
         it.insert(bytecode.get());
     }
 

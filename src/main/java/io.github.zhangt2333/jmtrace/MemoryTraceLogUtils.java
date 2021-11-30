@@ -6,25 +6,99 @@ package io.github.zhangt2333.jmtrace;
  */
 public class MemoryTraceLogUtils {
 
-    public static void traceFieldRead(Object o, String clzName, String fieldName) {
+    private static void traceFieldRead1(int hashCode, String clzName, String fieldName) {
         System.out.printf(
             "R %d %016x %s.%s\n",
             Thread.currentThread().getId(),
-            System.identityHashCode(o),
+            hashCode,
             clzName,
             fieldName
         );
     }
 
-    public static void traceFieldWrite(Object o, String clzName, String fieldName) {
+    public static void traceFieldRead(byte o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(boolean o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(char o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(short o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(int o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(float o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(Object o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(long o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldRead(double o, String clzName, String fieldName) {
+        traceFieldRead1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    private static void traceFieldWrite1(int hashCode, String clzName, String fieldName) {
         System.out.printf(
             "W %d %016x %s.%s\n",
             Thread.currentThread().getId(),
-            System.identityHashCode(o),
+                hashCode,
             clzName,
             fieldName
         );
     }
+
+    public static void traceFieldWrite(byte o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(boolean o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(char o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(short o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(int o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(float o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(Object o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(long o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+    public static void traceFieldWrite(double o, String clzName, String fieldName) {
+        traceFieldWrite1(System.identityHashCode(o), clzName, fieldName);
+    }
+
+
 
     private static void traceArrayWrite1(Object array, int index, int hashCode) {
         System.out.printf(

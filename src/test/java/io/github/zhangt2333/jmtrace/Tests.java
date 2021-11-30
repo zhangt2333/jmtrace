@@ -9,26 +9,68 @@ import org.junit.Test;
  */
 public class Tests {
 
-    public static String s;
+    public static String aStaticString;
+    public static byte aStaticByte;
+    public static boolean aStaticBoolean;
+    public static char aStaticChar;
+    public static short aStaticShort;
+    public static int aStaticInt;
+    public static float aStaticFloat;
+    public static double aStaticDouble;
+    public static long aStaticLong;
 
     @Test
     public void getStatic() {
-        String ss = s;
+        String aString = aStaticString;
+        byte aByte = aStaticByte;
+        boolean aBoolean = aStaticBoolean;
+        char aChar = aStaticChar;
+        short aShort = aStaticShort;
+        int anInt = aStaticInt;
+        float aFloat = aStaticFloat;
+        double aDouble = aStaticDouble;
+        long aLong = aStaticLong;
     }
 
     @Test
     public void putStatic() {
-        s = "aaa";
+        aStaticString= "ss";
+        aStaticByte = 5;
+        aStaticBoolean = true;
+        aStaticChar = 'c';
+        aStaticShort = 6;
+        aStaticInt = 100;
+        aStaticFloat = 0.3f;
+        aStaticDouble = 0.34;
+        aStaticLong = 3L;
     }
 
     @Test
     public void getField() {
-        String f = new A().f;
+        A a = new A();
+        String aString = a.aString;
+        byte aByte = a.aByte;
+        boolean aBoolean = a.aBoolean;
+        char aChar = a.aChar;
+        short aShort = a.aShort;
+        int anInt = a.anInt;
+        float aFloat = a.aFloat;
+        double aDouble = a.aDouble;
+        long aLong = a.aLong;
     }
 
     @Test
     public void putField() {
-        new A().f = "field2";
+        A a = new A();
+        a.aString = "ss";
+        a.aByte = 5;
+        a.aBoolean = true;
+        a.aChar = 'c';
+        a.aShort = 6;
+        a.anInt = 100;
+        a.aFloat = 0.3f;
+        a.aDouble = 0.34;
+        a.aLong = 3L;
     }
 
     @Test
