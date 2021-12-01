@@ -2,6 +2,8 @@ package io.github.zhangt2333.jmtrace;
 
 import org.junit.Test;
 
+import java.lang.reflect.Constructor;
+import java.net.URL;
 
 /**
  * JUnit Test cases for jmtrace
@@ -341,5 +343,37 @@ public class Tests {
     @Test
     public void bug1() {
         JavaVersion.getVersionForMajor(1);
+    }
+
+    /**
+     * A bug triggered by @see worker.org.gradle.process.internal.worker.GradleWorkerMain#run line68
+     * <br>
+     * because the @see worker.org.gradle.internal.classloader.FilteringClassLoader line91 shadows the @see sun.misc.Launcher.AppClassLoader
+     * which can load our class @see io.github.zhangt2333.jmtrace.MemoryTraceLogUtils.
+     * <br>
+     * The call stack is as follows: <br>
+     * <pre>
+     * loadClass:408, ClassLoader (java.lang) [2]
+     * loadClass:352, ClassLoader (java.lang)
+     * loadClass:91, FilteringClassLoader (worker.org.gradle.internal.classloader)
+     * loadClass:406, ClassLoader (java.lang) [1]
+     * loadClass:352, ClassLoader (java.lang)
+     * <init>:75, SystemApplicationClassLoaderWorker (org.gradle.process.internal.worker.child)
+     * newInstance0:-1, NativeConstructorAccessorImpl (sun.reflect)
+     * newInstance:62, NativeConstructorAccessorImpl (sun.reflect)
+     * newInstance:45, DelegatingConstructorAccessorImpl (sun.reflect)
+     * newInstance:423, Constructor (java.lang.reflect)
+     * run:68, GradleWorkerMain (worker.org.gradle.process.internal.worker)
+     * main:74, GradleWorkerMain (worker.org.gradle.process.internal.worker)
+     * </pre>
+     * <br>
+     * @see io.github.zhangt2333.jmtrace.CustomClassLoader for reproducing the bug
+     */
+    @Test
+    public void bug2() throws Exception{
+        Class<?> aClass = CustomClassLoader.make().loadClass("io.github.zhangt2333.jmtrace.A");
+        Constructor<?> declaredConstructor = aClass.getDeclaredConstructor(String.class);
+        declaredConstructor.setAccessible(true);
+        declaredConstructor.newInstance("aa");
     }
 }

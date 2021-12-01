@@ -1,8 +1,10 @@
 package io.github.zhangt2333.jmtrace;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtBehavior;
 import javassist.CtClass;
+import javassist.NotFoundException;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -14,6 +16,7 @@ import javassist.bytecode.Mnemonic;
 import javassist.bytecode.Opcode;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
@@ -33,15 +36,18 @@ public class BytecodeTransformer implements ClassFileTransformer {
 
     private ClassPool classPool;
 
-    private static final String[] DEBUG_EXCLUDING_PACKAGE = {
+    private static final String[] EXCLUDING_SYSTEM_PACKAGE = {
+        "com.sun",
+        "sun.reflect",
+    };
+
+    private static final String[] EXCLUDING_DEBUG_PACKAGE = {
         "org.gradle",
         "org.junit",
-        "com.sun",
         "com.esotericsoftware",
         "worker.org.gradle",
         "org.slf4j",
         "net.rubygrapefruit",
-        "sun.reflect",
         "junit.framework",
         "org.apache",
     };
@@ -57,9 +63,14 @@ public class BytecodeTransformer implements ClassFileTransformer {
         if (loader == null || EXT_CLASS_LOADER_CLASS.isInstance(loader)) {
             return true;
         }
+        for (String s : EXCLUDING_SYSTEM_PACKAGE) {
+            if (className.startsWith(s)) {
+                return true;
+            }
+        }
         // excluding gradle and junit when debug is true
         if (debug) {
-            for (String s : DEBUG_EXCLUDING_PACKAGE) {
+            for (String s : EXCLUDING_DEBUG_PACKAGE) {
                 if (className.startsWith(s)) {
                     return true;
                 }
@@ -142,6 +153,14 @@ public class BytecodeTransformer implements ClassFileTransformer {
                 codeAttribute.computeMaxStack();
             }
             return ctClass.toBytecode();
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("frozen")) {
+                try {
+                    return classPool.get(className).toBytecode();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

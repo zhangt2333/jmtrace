@@ -34,4 +34,11 @@ class A {
     public Long[] longss;
     public Object[] objects;
     public A[] as;
+
+    public A() {
+    }
+
+    public A(String aString) {
+        this.aString = aString;
+    }
 }
