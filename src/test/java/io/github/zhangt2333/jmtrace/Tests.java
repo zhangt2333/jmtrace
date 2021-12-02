@@ -3,7 +3,6 @@ package io.github.zhangt2333.jmtrace;
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
-import java.net.URL;
 
 /**
  * JUnit Test cases for jmtrace
@@ -371,7 +370,7 @@ public class Tests {
      */
     @Test
     public void bug2() throws Exception{
-        Class<?> aClass = CustomClassLoader.make().loadClass("io.github.zhangt2333.jmtrace.A");
+        Class<?> aClass = CustomClassLoader.make().loadClass(A.class.getName());
         Constructor<?> declaredConstructor = aClass.getDeclaredConstructor(String.class);
         declaredConstructor.setAccessible(true);
         declaredConstructor.newInstance("aa");
