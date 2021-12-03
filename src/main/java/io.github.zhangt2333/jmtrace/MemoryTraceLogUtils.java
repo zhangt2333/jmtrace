@@ -1,13 +1,17 @@
 package io.github.zhangt2333.jmtrace;
 
+import java.io.PrintStream;
+
 /**
  * some utils for logging memory trace
  * @author zhangt2333
  */
 public class MemoryTraceLogUtils {
 
+    private static final PrintStream PRINT_STREAM = System.out;
+
     private static void traceFieldRead1(int hashCode, String clzName, String fieldName) {
-        System.out.printf(
+        PRINT_STREAM.printf(
             "R %d %016x %s.%s\n",
             Thread.currentThread().getId(),
             hashCode,
@@ -53,7 +57,7 @@ public class MemoryTraceLogUtils {
     }
 
     private static void traceFieldWrite1(int hashCode, String clzName, String fieldName) {
-        System.out.printf(
+        PRINT_STREAM.printf(
             "W %d %016x %s.%s\n",
             Thread.currentThread().getId(),
                 hashCode,
@@ -101,7 +105,7 @@ public class MemoryTraceLogUtils {
 
 
     private static void traceArrayWrite1(Object array, int index, int hashCode) {
-        System.out.printf(
+        PRINT_STREAM.printf(
             "W %d %016x %s[%d]\n",
             Thread.currentThread().getId(),
             hashCode,
@@ -135,7 +139,7 @@ public class MemoryTraceLogUtils {
     }
 
     public static void traceArrayWrite(long value, int index) {
-        System.out.printf(
+        PRINT_STREAM.printf(
             "W %d %016x long[%d]\n",
             Thread.currentThread().getId(),
             System.identityHashCode(value),
@@ -144,7 +148,7 @@ public class MemoryTraceLogUtils {
     }
 
     public static void traceArrayWrite(double value, int index) {
-        System.out.printf(
+        PRINT_STREAM.printf(
             "W %d %016x double[%d]\n",
             Thread.currentThread().getId(),
             System.identityHashCode(value),
@@ -153,7 +157,7 @@ public class MemoryTraceLogUtils {
     }
 
     private static void traceArrayRead1(Object array, int index, int hashCode) {
-        System.out.printf(
+        PRINT_STREAM.printf(
             "R %d %016x %s[%d]\n",
             Thread.currentThread().getId(),
             hashCode,
