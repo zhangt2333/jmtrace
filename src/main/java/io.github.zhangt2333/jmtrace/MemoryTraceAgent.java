@@ -12,10 +12,11 @@ public class MemoryTraceAgent {
     public static void premain(String arg, Instrumentation instrumentation) {
         addUrlToExtClassLoader();
         boolean debug = "debug=true".equals(arg);
+        boolean test = "test=true".equals(arg);
         if (debug) {
             System.out.println("[debug] Javaagent premain running.");
         }
-        instrumentation.addTransformer(new BytecodeTransformer(debug));
+        instrumentation.addTransformer(new BytecodeTransformer(debug, test));
     }
 
     private static void addUrlToExtClassLoader() {

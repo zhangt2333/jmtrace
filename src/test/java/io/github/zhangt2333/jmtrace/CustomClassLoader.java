@@ -34,7 +34,6 @@ public class CustomClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        System.out.println("[debug] loading " + name);
         if (MemoryTraceLogUtils.class.getName().equals(name)) {
             return EXT_CLASS_LOADER.loadClass(name);
         }

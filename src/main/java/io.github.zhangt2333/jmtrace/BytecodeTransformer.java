@@ -29,7 +29,9 @@ public class BytecodeTransformer implements ClassFileTransformer {
                                                                                           .getParent()
                                                                                           .getClass();
 
-    private boolean debug;
+    private boolean isDebug;
+
+    private boolean isTest;
 
     private ClassPool classPool;
 
@@ -38,7 +40,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         "sun.reflect",
     };
 
-    private static final String[] EXCLUDING_DEBUG_PACKAGE = {
+    private static final String[] EXCLUDING_TEST_PACKAGE = {
         "org.gradle",
         "org.junit",
         "com.esotericsoftware",
@@ -49,8 +51,9 @@ public class BytecodeTransformer implements ClassFileTransformer {
         "org.apache",
     };
 
-    public BytecodeTransformer(boolean debug) {
-        this.debug = debug;
+    public BytecodeTransformer(boolean isDebug, boolean isTest) {
+        this.isDebug = isDebug;
+        this.isTest = isTest;
         this.classPool = ClassPool.getDefault();
         this.classPool.appendSystemPath();
     }
@@ -65,9 +68,9 @@ public class BytecodeTransformer implements ClassFileTransformer {
                 return true;
             }
         }
-        // excluding gradle and junit when debug is true
-        if (debug) {
-            for (String s : EXCLUDING_DEBUG_PACKAGE) {
+        // excluding gradle and junit when test is true
+        if (!isTest) {
+            for (String s : EXCLUDING_TEST_PACKAGE) {
                 if (className.startsWith(s)) {
                     return true;
                 }
@@ -99,7 +102,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
                 MethodInfo methodInfo = ctBehavior.getMethodInfo();
                 CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
 
-                if (debug) {
+                if (isDebug) {
                     System.out.printf("[debug]   [%s#%s%s]\n", ctClass.getName(), methodInfo.getName(),
                             methodInfo.getDescriptor());
                     printAllBytecode(codeAttribute);
@@ -143,7 +146,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
                             break;
                     }
                 }
-                if (debug) {
+                if (isDebug) {
                     System.out.println("[debug] -------- after manipulating --------");
                     printAllBytecode(codeAttribute);
                 }

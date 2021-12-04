@@ -20,3 +20,5 @@ out/
 .project
 
 *.gpg
+
+jmtrace

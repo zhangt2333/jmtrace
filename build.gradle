@@ -1,3 +1,5 @@
+import java.nio.file.Files
+
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.0'
@@ -27,7 +29,18 @@ shadowJar {
 
 test {
     dependsOn shadowJar
+
     jvmArgs([
-        "-javaagent:" + tasks.shadowJar.archiveFile.get().asFile.path + "=" + "debug=true"
+        "-javaagent:" + tasks.shadowJar.archiveFile.get().asFile.path + "=" + "debug=false&test=true"
     ])
 }
+
+task('package', {
+    dependsOn shadowJar
+    doLast {
+        def binary = "#!/bin/bash\n" +
+                     "JMTRACE_PATH=" + tasks.shadowJar.archiveFile.get().asFile.path + "\n" +
+                     "java -javaagent:\${JMTRACE_PATH} \$@"
+        Files.write(new File('jmtrace').toPath(), binary.getBytes());
+    }
+})
