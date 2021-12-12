@@ -29,11 +29,11 @@ public class BytecodeTransformer implements ClassFileTransformer {
                                                                                           .getParent()
                                                                                           .getClass();
 
-    private boolean isDebug;
+    private final boolean isDebug;
 
-    private boolean isTest;
+    private final boolean isTest;
 
-    private ClassPool classPool;
+    private final ClassPool classPool;
 
     private static final String[] EXCLUDING_SYSTEM_PACKAGE = {
         "com.sun",
@@ -58,7 +58,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         this.classPool.appendSystemPath();
     }
 
-    private boolean isExcludeClass(ClassLoader loader, String className) {
+    private boolean isExcludingClass(ClassLoader loader, String className) {
         // excluding the system library
         if (loader == null || EXT_CLASS_LOADER_CLASS.isInstance(loader)) {
             return true;
@@ -87,7 +87,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
         className = className.replace('/', '.');
-        if (isExcludeClass(loader, className)) {
+        if (isExcludingClass(loader, className)) {
             return null;
         }
 
@@ -138,11 +138,9 @@ public class BytecodeTransformer implements ClassFileTransformer {
                         case Opcode.IALOAD:
                         case Opcode.FALOAD:
                         case Opcode.AALOAD:
-                            handle32xaload(it, constPool, address, opcode);
-                            break;
                         case Opcode.LALOAD:
                         case Opcode.DALOAD:
-                            handle64xaload(it, constPool, address, opcode);
+                            handleXaload(it, constPool, address, opcode);
                             break;
                     }
                 }
@@ -276,7 +274,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         it.insert(address, bytecode.get());
     }
 
-    private void handle32xaload(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
+    private void handleXaload(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
         Bytecode bytecode = new Bytecode(constPool);
         // ..., arr, index
         bytecode.add(Opcode.DUP2);
@@ -284,22 +282,7 @@ public class BytecodeTransformer implements ClassFileTransformer {
         bytecode.add(Opcode.DUP2);
         // ..., arr, index, arr, index, arr, index
         bytecode.add(opcode);
-        // ..., arr, index, arr, index, value(4Byte)
-        bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
-                "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
-        // ..., arr, index
-        it.insert(address, bytecode.get());
-    }
-
-    private void handle64xaload(CodeIterator it, ConstPool constPool, int address, int opcode) throws BadBytecode {
-        Bytecode bytecode = new Bytecode(constPool);
-        // ..., arr, index
-        bytecode.add(Opcode.DUP2);
-        // ..., arr, index, arr, index
-        bytecode.add(Opcode.DUP2);
-        // ..., arr, index, arr, index, arr, index
-        bytecode.add(opcode);
-        // ..., arr, index, arr, index, value(8Byte)
+        // ..., arr, index, arr, index, value(4Byte or 8Byte)
         bytecode.addInvokestatic(MemoryTraceLogUtils.class.getName(),
                 "traceArrayRead", String.format("(Ljava/lang/Object;I%s)V", opcodeToDescriptor(opcode)));
         // ..., arr, index
