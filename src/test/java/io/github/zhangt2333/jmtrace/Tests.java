@@ -311,7 +311,7 @@ public class Tests {
     /**
      * A bug triggered by @see worker.org.gradle.api.JavaVersion#getVersionForMajor
      * <br>
-     * this reason of the bug is Javassist have not edited the operand of goto instruction when we call `CodeIterator::insert` twice
+     * this reason of the bug is that Javassist has not edited the operand of goto instruction when we call `CodeIterator::insert` twice
      * <br>
      * <pre>
      * Instruction type does not match stack map

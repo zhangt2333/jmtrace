@@ -1,4 +1,5 @@
 import java.nio.file.Files
+import java.nio.file.Paths
 
 plugins {
     id 'java'
@@ -38,9 +39,21 @@ test {
 task('package', {
     dependsOn shadowJar
     doLast {
-        def binary = "#!/bin/bash\n" +
-                     "JMTRACE_PATH=" + tasks.shadowJar.archiveFile.get().asFile.path + "\n" +
-                     "java -javaagent:\${JMTRACE_PATH} \$@"
-        Files.write(new File('jmtrace').toPath(), binary.getBytes());
+        def binary = """#!/bin/bash
+__usage="
+Usage: ./jmtrace [-h|--help] class [args...]
+           (to execute a class)
+   or  ./jmtrace [-h|--help] -jar jarfile [args...]
+           (to execute a jar file)
+"
+
+if [[ \$@ == "" ]] || [[ \$@ == *"-h"* ]] || [[ \$@ == *"--help"* ]]; then
+  echo "\$__usage"
+  exit -1
+fi
+
+java -javaagent:"${tasks.shadowJar.archiveFile.get().asFile.path}" \$@
+"""
+        Files.write(Paths.get("$projectDir", 'jmtrace'), binary.getBytes());
     }
 })
