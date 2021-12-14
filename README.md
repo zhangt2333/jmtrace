@@ -2,9 +2,13 @@
 
 Trace memory access in Java programs.
 
+## Get started
+* Make sure `Java 8` is installed.
+
 ## Build
 We use `Gradle` as our build tool.
 It is easy to build by
+
 ```shell
 chmod +x ./gradlew
 ./gradlew package
@@ -12,7 +16,7 @@ chmod +x ./gradlew
 
 ## Usage
 
-The usage is same to the `java` command. For example, if you have a JAR package `Hello.jar` and want to trace its memory accesses, you can type the following command:
+The usage is the same as the `java` command. For example, if you have a JAR package `Hello.jar` and want to trace its memory accesses, you can type the following command:
 ```shell
 chmod +x ./jmtrace
 ./jmtrace -jar Hello.jar
@@ -33,8 +37,6 @@ chmod +x ./gradlew
 ```
 
 then you can see the report in `build/reports/tests/test/classes/io.github.zhangt2333.jmtrace.Tests.html`
-
-
 
 
 
