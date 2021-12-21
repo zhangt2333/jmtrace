@@ -264,6 +264,16 @@ public class Tests {
     }
 
     @Test
+    public void innerClass() {
+        new InnerClass();
+    }
+
+    @Test
+    public void temperingSystemOut() {
+        new TemperingSystemOut();
+    }
+
+    @Test
     public void objectArrayLoad() {
         A a = new A();
 
