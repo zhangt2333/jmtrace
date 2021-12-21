@@ -1,0 +1,5 @@
+W 1 0000000062150f9e io.github.zhangt2333.jmtrace.A.booleans
+R 1 0000000062150f9e io.github.zhangt2333.jmtrace.A.booleans
+R 1 0000000065d6b83b boolean[0]
+R 1 0000000062150f9e io.github.zhangt2333.jmtrace.A.booleans
+R 1 0000000065d6b83b boolean[1]

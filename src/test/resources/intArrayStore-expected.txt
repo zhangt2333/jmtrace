@@ -1,0 +1,5 @@
+W 1 0000000023986957 io.github.zhangt2333.jmtrace.A.ints
+R 1 0000000023986957 io.github.zhangt2333.jmtrace.A.ints
+W 1 0000000078b729e6 int[0]
+R 1 0000000023986957 io.github.zhangt2333.jmtrace.A.ints
+W 1 0000000023f7d05d int[1]

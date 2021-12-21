@@ -1,0 +1,5 @@
+W 1 0000000045018215 io.github.zhangt2333.jmtrace.A.bytes
+R 1 0000000045018215 io.github.zhangt2333.jmtrace.A.bytes
+R 1 0000000065d6b83b byte[0]
+R 1 0000000045018215 io.github.zhangt2333.jmtrace.A.bytes
+R 1 0000000065d6b83b byte[1]

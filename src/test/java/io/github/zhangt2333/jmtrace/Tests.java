@@ -1,14 +1,84 @@
 package io.github.zhangt2333.jmtrace;
 
-import org.junit.Test;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * JUnit Test cases for jmtrace
  * @author zhangt2333
  */
 public class Tests {
+
+    @Rule 
+    public TestName testName = new TestName();
+
+    private ByteArrayOutputStream stdOutCaptor;
+
+    @Before
+    public void before() throws Exception {
+        ClassLoader extClassLoader = Tests.class.getClassLoader().getParent();
+        Field stdOutField = extClassLoader.loadClass("io.github.zhangt2333.jmtrace.MemoryTraceLogUtils").getDeclaredField("PRINT_STREAM");
+
+        stdOutField.setAccessible(true);
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+
+        stdOutCaptor = new ByteArrayOutputStream();
+        stdOutField.set(null, new PrintStream(stdOutCaptor, false));
+    }
+
+//    @After
+    public synchronized void writeExpectation() throws Exception {
+        String[] outputLines = stdOutCaptor.toString().split("\n");
+        String methodName = testName.getMethodName();
+        try (FileWriter fileWriter = new FileWriter(Paths.get("src/test/resources", methodName + "-expected.txt").toString())) {
+            for (int i = 0; i < outputLines.length - 1; i++) {
+                fileWriter.append(outputLines[i]).append("\n");
+            }
+        }
+    }
+
+    @After
+    public void doAssert() throws Exception {
+        String[] outputLines = stdOutCaptor.toString().split("\n");
+
+        Pattern re = Pattern.compile("([RW]) \\d [0-9a-fA-F]+ (.*)");
+        String methodName = testName.getMethodName();
+        List<String> answerList = Files.readAllLines(Paths.get("src/test/resources", methodName + "-expected.txt"), StandardCharsets.UTF_8)
+                                       .stream()
+                                       .filter(line -> re.matcher(line).matches())
+                                       .collect(Collectors.toList());
+        for (int i = 0, n = Math.min(answerList.size(), outputLines.length); i < n; i++) {
+            Matcher m = re.matcher(answerList.get(i));
+            m.find();
+            String op1 = m.group(1);
+            String fieldName1 = m.group(2);
+            m = re.matcher(outputLines[i]);
+            m.find();
+            String op2 = m.group(1);
+            String fieldName2 = m.group(2);
+            if (!op1.equals(op2) || !fieldName1.equals(fieldName2)) {
+                throw new AssertionError("expected similar output: \"" + answerList.get(i) + "\"; given: \"" + outputLines[i] + "\"");
+            }
+        }
+    }
 
     public static String aStaticString;
     public static byte aStaticByte;

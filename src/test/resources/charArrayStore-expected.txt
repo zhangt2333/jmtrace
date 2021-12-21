@@ -1,0 +1,5 @@
+W 1 0000000069930714 io.github.zhangt2333.jmtrace.A.chars
+R 1 0000000069930714 io.github.zhangt2333.jmtrace.A.chars
+W 1 000000007a52f2a2 char[0]
+R 1 0000000069930714 io.github.zhangt2333.jmtrace.A.chars
+W 1 0000000078047b92 char[1]

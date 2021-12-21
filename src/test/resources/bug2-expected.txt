@@ -1,0 +1,5 @@
+W 1 00000000677327b6 io.github.zhangt2333.jmtrace.CustomClassLoader.EXT_CLASS_LOADER
+W 1 0000000073035e27 java.lang.Class[0]
+W 1 0000000057c758ac java.lang.Object[0]
+R 1 00000000677327b6 io.github.zhangt2333.jmtrace.CustomClassLoader.EXT_CLASS_LOADER
+W 1 0000000057c758ac io.github.zhangt2333.jmtrace.A.aString

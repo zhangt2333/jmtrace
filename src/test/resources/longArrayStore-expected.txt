@@ -1,0 +1,5 @@
+W 1 000000005e82df6a io.github.zhangt2333.jmtrace.A.longs
+R 1 000000005e82df6a io.github.zhangt2333.jmtrace.A.longs
+W 1 000000003f197a46 long[0]
+R 1 000000005e82df6a io.github.zhangt2333.jmtrace.A.longs
+W 1 00000000636be97c long[1]

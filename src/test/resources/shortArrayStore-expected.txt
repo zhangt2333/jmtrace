@@ -1,0 +1,5 @@
+W 1 0000000014a2f921 io.github.zhangt2333.jmtrace.A.shorts
+R 1 0000000014a2f921 io.github.zhangt2333.jmtrace.A.shorts
+W 1 0000000003c87521 short[0]
+R 1 0000000014a2f921 io.github.zhangt2333.jmtrace.A.shorts
+W 1 000000002aece37d short[1]

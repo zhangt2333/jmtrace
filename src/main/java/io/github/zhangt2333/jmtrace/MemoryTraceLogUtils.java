@@ -8,7 +8,11 @@ import java.io.PrintStream;
  */
 public class MemoryTraceLogUtils {
 
-    private static final PrintStream PRINT_STREAM = System.out;
+//    static {
+//        System.err.println("loaded by " + MemoryTraceLogUtils.class.getClassLoader());
+//    }
+
+    private static PrintStream PRINT_STREAM = System.out;
 
     private static void traceFieldRead1(int hashCode, String clzName, String fieldName) {
         PRINT_STREAM.printf(

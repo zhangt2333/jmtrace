@@ -1,0 +1,5 @@
+W 1 0000000063355449 io.github.zhangt2333.jmtrace.A.floats
+R 1 0000000063355449 io.github.zhangt2333.jmtrace.A.floats
+W 1 0000000009353778 float[0]
+R 1 0000000063355449 io.github.zhangt2333.jmtrace.A.floats
+W 1 000000006a28ffa4 float[1]

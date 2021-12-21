@@ -1,0 +1,3 @@
+R 1 0000000010db82ae java.lang.System.out
+R 1 00000000501edcf1 java.lang.System.err
+W 1 0000000078b729e6 io.github.zhangt2333.jmtrace.TemperingSystemOut.f

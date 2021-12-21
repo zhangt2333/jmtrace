@@ -24,7 +24,7 @@ public class MemoryTraceAgent {
             ClassLoader extClassLoader = ClassLoader.getSystemClassLoader().getParent();
             Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", java.net.URL.class);
             addURL.setAccessible(true);
-            addURL.invoke(extClassLoader, MemoryTraceLogUtils.class.getProtectionDomain().getCodeSource().getLocation());
+            addURL.invoke(extClassLoader, MemoryTraceAgent.class.getProtectionDomain().getCodeSource().getLocation());
         } catch (Throwable t) {
             t.printStackTrace();
         }

@@ -1,0 +1,5 @@
+W 1 0000000022635ba0 io.github.zhangt2333.jmtrace.A.doubles
+R 1 0000000022635ba0 io.github.zhangt2333.jmtrace.A.doubles
+W 1 0000000013c10b87 double[0]
+R 1 0000000022635ba0 io.github.zhangt2333.jmtrace.A.doubles
+W 1 0000000006a01e23 double[1]
