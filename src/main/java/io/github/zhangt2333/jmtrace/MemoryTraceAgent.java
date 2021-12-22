@@ -25,6 +25,7 @@ public class MemoryTraceAgent {
             Method addURL = URLClassLoader.class.getDeclaredMethod("addURL", java.net.URL.class);
             addURL.setAccessible(true);
             addURL.invoke(extClassLoader, MemoryTraceAgent.class.getProtectionDomain().getCodeSource().getLocation());
+            extClassLoader.loadClass("io.github.zhangt2333.jmtrace.MemoryTraceLogUtils"); // to cache System.out in advance
         } catch (Throwable t) {
             t.printStackTrace();
         }

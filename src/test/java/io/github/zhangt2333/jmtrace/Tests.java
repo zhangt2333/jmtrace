@@ -34,14 +34,13 @@ public class Tests {
     @Before
     public void before() throws Exception {
         ClassLoader extClassLoader = Tests.class.getClassLoader().getParent();
-        Field stdOutField = extClassLoader.loadClass("io.github.zhangt2333.jmtrace.MemoryTraceLogUtils").getDeclaredField("PRINT_STREAM");
+        Field stdOutField = extClassLoader.loadClass("io.github.zhangt2333.jmtrace.MemoryTraceLogUtils").getDeclaredField("out");
 
         stdOutField.setAccessible(true);
         Field modifiersField = Field.class.getDeclaredField("modifiers");
         modifiersField.setAccessible(true);
 
-        stdOutCaptor = new ByteArrayOutputStream();
-        stdOutField.set(null, new PrintStream(stdOutCaptor, false));
+        stdOutField.set(null, new PrintStream(stdOutCaptor = new ByteArrayOutputStream(), false));
     }
 
 //    @After
