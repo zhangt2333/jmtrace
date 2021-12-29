@@ -2,8 +2,9 @@
 
 Trace memory access in Java programs.
 
-## Get started
-* Make sure `Java 8` is installed.
+## Get started (Very Important!!!)
+* Make sure `Java 8` (only in version 8) is installed. （请安装 Java 8，而不是其他任何版本）
+* Make sure `Ubuntu 18.04` or higher version is your OS. （请使用 Ubuntu 18.04 或更高版本的操作系统）
 
 ## Build
 We use `Gradle` as our build tool.
@@ -37,7 +38,6 @@ chmod +x ./gradlew
 ```
 
 then you can see the report in `build/reports/tests/test/classes/io.github.zhangt2333.jmtrace.Tests.html`
-
 
 
 Note that `./jmtrace` is in fact a shell script.

@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -37,6 +39,16 @@ test {
 }
 
 task('package', {
+    doLast {
+        if (JavaVersion.VERSION_1_8 != JavaVersion.current()) {
+            System.err.println("Build failed, you should use Java 8, please make sure 'java -version' in your terminal will output 'version 1.8.*'!")
+            return -1
+        }
+        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            System.err.println("Build failed, you should use Ubuntu (18.04 or higher version) but not Windows!")
+            return -1
+        }
+    }
     dependsOn shadowJar
     doLast {
         def binary = """#!/bin/bash
